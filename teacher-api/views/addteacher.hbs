@@ -1,0 +1,70 @@
+<div class="container">
+  <h1>Teacher Add Form</h1>
+  <form id="teacher-form" action="{{action}}" method="{{method}}" _method="{{method}}">
+    <label for="fname">First Name:</label>
+    <input type="text" name="firstName" id="fname" value="{{teacher.firstName}}" placeholder="First Name" required />
+    <br />
+    <label for="lname">Last Name:</label>
+    <input type="text" id="lname" name="lastName" value="{{teacher.lastName}}" placeholder="Last Name" required />
+    <br />
+    <label for="age">Age:</label>
+    <input type="text" name="age" value="{{teacher.age}}" placeholder="Age in years" required />
+    <br />
+    <label for="email">Email:</label>
+    <input type="email" name="email" value="{{teacher.email}}" placeholder="Email address" required>
+    <br>
+    <label>Gender:</label>
+    <input type="radio" name="gender" id="gender-male" value="female"
+      {{#if (ifEquality teacher.gender "male")}}checked{{/if}} required />
+    <label for="male">Male</label>
+    <input type="radio" name="gender" id="gender-female" value="female"
+      {{#if (ifEquality teacher.gender "female")}}checked{{/if}} required />
+
+    <label for="female">Female</label>
+    <br />
+    <input class="btn btn-primary" type="submit" value="Add Teacher" />
+  </form>
+</div>
+<script>
+  const $addteacherForm = document.querySelector("#teacher-form")
+  $addteacherForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const submitURL = $addteacherForm.action
+    const formData = new FormData($addteacherForm);
+    let teacherDetail = {};
+    for (const fields of formData.entries()) {
+      const [key, value] = fields;
+      teacherDetail[key] = value;
+    }
+
+    fetch(submitURL, {
+      method: $addteacherForm.getAttribute("_method"),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(teacherDetail)
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json()
+        } else {
+          throw (new Error(response.status))
+        }
+      })
+      .then(data => {
+        alert(data.message);
+      })
+      .catch(error => {
+        switch (error.message) {
+          case "400":
+            alert("Please check form values.");
+            break;
+          case "500":
+            alert("Please Try after some time.");
+            break;
+          default:
+            console.error(error);
+        }
+      })
+  });
+</script>

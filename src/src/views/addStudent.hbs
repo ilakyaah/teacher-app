@@ -1,0 +1,65 @@
+<div class="container">
+  <h1 class="text-center">STUDENT FORM</h1>
+  <form id="student-Form" action="{{action}}" method="{{method}}" _method={{method}}>
+    <label for="sID">Student ID:</label>
+    <input type="text" name="studentID" id="sID" value="{{students.studentID}}" placeholder="Student ID" required>
+    <br>
+    <label for="sName">student Name:</label>
+    <input type="text" name="studentName" value="{{students.studentName}}" id="sName" placeholder="student Name"
+      required>
+    <br>
+
+    <label>Gender:</label>
+    <input type="radio" name="gender" id="gender-male" value="female"
+      {{#if (ifEquality students.gender "male")}}checked{{/if}} required />
+    <label for="male">Male</label>
+    <input type="radio" name="gender" id="gender-female" value="female"
+      {{#if (ifEquality students.gender "female")}}checked{{/if}} required />
+
+    <label for="female">Female</label>
+    <br>
+    <input type="submit" name="" id="" class="btn btn-primary btn-large" value="Add Student">
+  </form>
+</div>
+<script>
+  const $addstudentForm = document.querySelector("#student-Form")
+  $addstudentForm.addEventListener("submit", event => {
+    event.preventDefault();
+    const submitURL = $addstudentForm.action
+    const formData = new FormData($addstudentForm);
+    let studentDetail = {};
+    for (let fields of formData.entries()) {
+      const [key, value] = fields;
+      studentDetail[key] = value;
+    }
+
+    fetch(submitURL, {
+      method: $addstudentForm.getAttribute("_method"),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(studentDetail)
+    })
+      .then(response => {
+        if (response.status === 200) {
+          return response.json()
+        } else {
+          throw (new Error(response.status))
+        }
+      })
+      .then(data => {
+        alert(data.message);
+      })
+      .catch(error => {
+        switch (error.message) {
+          case "400":
+            alert("Please check form values.");
+            break;
+          case "500":
+            alert("Please Try after some time.");
+            break;
+          default:
+            console.error(error);
+        }
+      })
+  });
+
+</script>
